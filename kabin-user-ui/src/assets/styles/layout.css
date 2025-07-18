@@ -1,0 +1,65 @@
+/* 布局样式 */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px; /* 添加左右边距 */
+}
+
+.header, .footer {
+  background-color: #333; /* 设置页脚和头部背景色 */
+  color: white; /* 字体颜色 */
+  padding: 20px 0;
+}
+
+.header {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000; /* 确保在顶部 */
+}
+
+.header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header ul {
+  display: flex;
+  gap: 20px;
+}
+
+.header li {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.footer {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 14px;
+}
+
+.footer .qr-code {
+  margin-top: 10px;
+}
+
+/* 页脚二维码样式 */
+.footer .qr-code img {
+  width: 80px;
+  height: 80px;
+  margin-top: 10px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header nav {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer {
+    padding: 20px 0;
+  }
+}

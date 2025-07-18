@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kabin.file.mapper.TbFinancialFileMapper">
+    
+    <resultMap type="TbFinancialFile" id="TbFinancialFileResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="filePath"    column="file_path"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTbFinancialFileVo">
+        select id, name, file_path, create_by, create_time, update_by, update_time, remark from tb_financial_file
+    </sql>
+
+    <select id="selectTbFinancialFileList" parameterType="TbFinancialFile" resultMap="TbFinancialFileResult">
+        <include refid="selectTbFinancialFileVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="filePath != null  and filePath != ''"> and file_path = #{filePath}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbFinancialFileById" parameterType="Long" resultMap="TbFinancialFileResult">
+        <include refid="selectTbFinancialFileVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTbFinancialFile" parameterType="TbFinancialFile">
+        insert into tb_financial_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="filePath != null">file_path,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbFinancialFile" parameterType="TbFinancialFile">
+        update tb_financial_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbFinancialFileById" parameterType="Long">
+        delete from tb_financial_file where id = #{id}
+    </delete>
+
+    <delete id="deleteTbFinancialFileByIds" parameterType="String">
+        delete from tb_financial_file where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

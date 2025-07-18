@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kabin.goods.mapper.TbGoodsImageMapper">
+    
+    <resultMap type="TbGoodsImage" id="TbGoodsImageResult">
+        <result property="id"    column="id"    />
+        <result property="goodId"    column="good_id"    />
+        <result property="style"    column="style"    />
+        <result property="image"    column="image"    />
+        <result property="isMain"    column="is_main"    />
+        <result property="sort"    column="sort"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTbGoodsImageVo">
+        select id, good_id, style, image, is_main, sort, create_by, create_time, update_by, update_time, remark from tb_goods_image
+    </sql>
+
+    <select id="selectTbGoodsImageList" parameterType="TbGoodsImage" resultMap="TbGoodsImageResult">
+        <include refid="selectTbGoodsImageVo"/>
+        <where>  
+            <if test="goodId != null "> and good_id = #{goodId}</if>
+            <if test="style != null  and style != ''"> and style like concat('%', #{style}, '%')</if>
+            <if test="image != null  and image != ''"> and image = #{image}</if>
+            <if test="isMain != null "> and is_main = #{isMain}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbGoodsImageById" parameterType="Long" resultMap="TbGoodsImageResult">
+        <include refid="selectTbGoodsImageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTbGoodsImage" parameterType="TbGoodsImage" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_goods_image
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodId != null">good_id,</if>
+            <if test="style != null and style != ''">style,</if>
+            <if test="image != null and image != ''">image,</if>
+            <if test="isMain != null">is_main,</if>
+            <if test="sort != null">sort,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodId != null">#{goodId},</if>
+            <if test="style != null and style != ''">#{style},</if>
+            <if test="image != null and image != ''">#{image},</if>
+            <if test="isMain != null">#{isMain},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbGoodsImage" parameterType="TbGoodsImage">
+        update tb_goods_image
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodId != null">good_id = #{goodId},</if>
+            <if test="style != null and style != ''">style = #{style},</if>
+            <if test="image != null and image != ''">image = #{image},</if>
+            <if test="isMain != null">is_main = #{isMain},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="selectByGoodId" resultType="com.kabin.goods.domain.TbGoodsImage">
+        SELECT * FROM tb_goods_image
+        WHERE good_id = #{goodId}
+        ORDER BY style ASC, is_main DESC
+    </select>
+
+    <delete id="deleteTbGoodsImageById" parameterType="Long">
+        delete from tb_goods_image where id = #{id}
+    </delete>
+
+    <delete id="deleteTbGoodsImageByIds" parameterType="String">
+        delete from tb_goods_image where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

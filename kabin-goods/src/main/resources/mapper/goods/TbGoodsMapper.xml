@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kabin.goods.mapper.TbGoodsMapper">
+    
+    <resultMap type="TbGoods" id="TbGoodsResult">
+        <result property="id"    column="id"    />
+        <result property="goodCover"    column="good_cover"    />
+        <result property="goodName"    column="good_name"    />
+        <result property="goodDescribe"    column="good_describe"    />
+        <result property="type"    column="type"    />
+        <result property="goodPrice"    column="good_price"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTbGoodsVo">
+        select id, good_cover, good_name, good_describe, type, good_price, create_by, create_time, update_by, update_time from tb_goods
+    </sql>
+
+    <select id="selectTbGoodsList" parameterType="TbGoods" resultMap="TbGoodsResult">
+        <include refid="selectTbGoodsVo"/>
+        <where>  
+            <if test="goodCover != null  and goodCover != ''"> and good_cover = #{goodCover}</if>
+            <if test="goodName != null  and goodName != ''"> and good_name like concat('%', #{goodName}, '%')</if>
+            <if test="goodDescribe != null  and goodDescribe != ''"> and good_describe = #{goodDescribe}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbGoodsById" parameterType="Long" resultMap="TbGoodsResult">
+        <include refid="selectTbGoodsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTbGoods" parameterType="TbGoods" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodCover != null">good_cover,</if>
+            <if test="goodName != null">good_name,</if>
+            <if test="goodDescribe != null">good_describe,</if>
+            <if test="type != null">type,</if>
+            <if test="goodPrice != null">good_price,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodCover != null">#{goodCover},</if>
+            <if test="goodName != null">#{goodName},</if>
+            <if test="goodDescribe != null">#{goodDescribe},</if>
+            <if test="type != null">#{type},</if>
+            <if test="goodPrice != null">#{goodPrice},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbGoods" parameterType="TbGoods">
+        update tb_goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodCover != null">good_cover = #{goodCover},</if>
+            <if test="goodName != null">good_name = #{goodName},</if>
+            <if test="goodDescribe != null">good_describe = #{goodDescribe},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="goodPrice != null">good_price = #{goodPrice},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbGoodsById" parameterType="Long">
+        delete from tb_goods where id = #{id}
+    </delete>
+
+    <delete id="deleteTbGoodsByIds" parameterType="String">
+        delete from tb_goods where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

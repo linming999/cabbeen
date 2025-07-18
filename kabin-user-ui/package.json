@@ -1,0 +1,26 @@
+{
+  "name": "kabin-frontend-vue",
+  "version": "1.0.0",
+  "description": "Kabin Frontend Vue Project",
+  "main": "index.js",
+  "scripts": {
+    "dev-run": "vue-cli-service serve",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.10.0",
+    "swiper": "^11.2.8",
+    "vue": "^3.0.0",
+    "vue-i18n": "^9.0.0",
+    "vue-router": "^4.0.0"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.0",
+    "eslint": "^7.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
