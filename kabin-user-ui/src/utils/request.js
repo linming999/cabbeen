@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 const request = axios.create({
-  baseURL: process.env.VUE_APP_API_URL, // 根据需要替换
+  baseURL: '/api', // 根据需要替换
   timeout: 10000
 })
 

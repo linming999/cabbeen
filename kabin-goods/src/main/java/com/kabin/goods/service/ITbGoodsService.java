@@ -3,6 +3,7 @@ package com.kabin.goods.service;
 import java.util.List;
 import com.kabin.goods.domain.TbGoods;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kabin.goods.domain.dto.GoodsDetailDto;
 import com.kabin.goods.domain.dto.GoodsDto;
 
 /**
@@ -65,4 +66,7 @@ public interface ITbGoodsService extends IService<TbGoods>
 
 
     List<GoodsDto> getGoodsWithImagesByCategory(String category);
+
+    GoodsDetailDto getGoodsDetailById(Long goodsId);
+
 }

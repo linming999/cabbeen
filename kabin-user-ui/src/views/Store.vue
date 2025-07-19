@@ -72,16 +72,18 @@
     <div class="product-grid">
       <div v-for="item in products" :key="item.id" class="product-card">
         <Swiper
-          :modules="[Autoplay, Pagination]"
+          :modules="[Navigation]"
           :loop="true"
-          :autoplay="{ delay: 2000 }"
+          navigation
           class="swiper-box"
         >
-          <SwiperSlide
-            v-for="(img, i) in item.imageList"
-            :key="i"
-          >
-            <img :src="img" class="product-img" />
+          <SwiperSlide v-for="(img, i) in item.imageList" :key="i">
+            <img
+              :src="img"
+              class="product-img"
+              @click="goToDetail(item.id)"
+              style="cursor: pointer"
+            />
           </SwiperSlide>
         </Swiper>
         <div class="product-info">
@@ -94,43 +96,61 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Autoplay, Pagination } from 'swiper'
-import 'swiper/css'
-import 'swiper/css/pagination'
-import request from '@/utils/request'
+import { ref, onMounted } from "vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import request from "@/utils/request";
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+const goToDetail = (id) => {
+  router.push(`/product/detail/${id}`);
+};
 
 // 分类数据
-const menswearup = ['T恤', '衬衫', '西服', '马甲', '夹克', 'POLO', '卫衣', '线衫', '休闲装']
-const mensweardw = ['休闲裤', '牛仔裤', '针织裤', '短裤', '内裤']
-const shoes = ['休闲鞋', '板鞋', '拖凉鞋']
-const trend = ['箱包', '帽子', '腰带', '项链', '袜子', '领带']
+const menswearup = [
+  "T恤",
+  "衬衫",
+  "西服",
+  "马甲",
+  "夹克",
+  "POLO",
+  "卫衣",
+  "线衫",
+  "休闲装",
+];
+const mensweardw = ["休闲裤", "牛仔裤", "针织裤", "短裤", "内裤"];
+const shoes = ["休闲鞋", "板鞋", "拖凉鞋"];
+const trend = ["箱包", "帽子", "腰带", "项链", "袜子", "领带"];
 
 // 当前分类 & 商品数据
-const currentCategory = ref('衬衫')
-const products = ref([])
+const currentCategory = ref("T恤");
+const products = ref([]);
 
 // 选择分类
 const selectCategory = (category) => {
-  currentCategory.value = category
-  fetchProducts()
-}
+  currentCategory.value = category;
+  fetchProducts();
+};
 
 // 获取商品
 const fetchProducts = async () => {
   try {
-    const res = await request.get('/goods/good/listByCategory', {
-      params: { category: currentCategory.value }
-    })
-    products.value = res.data.data || []
+    const res = await request.get("/goods/good/listByCategory", {
+      params: { category: currentCategory.value },
+    });
+    // console.log(res.data);
+
+    products.value = res.data || [];
   } catch (err) {
-    console.error('获取商品失败', err)
+    console.error("获取商品失败", err);
   }
-}
+};
 
 // 初始加载
-onMounted(fetchProducts)
+onMounted(fetchProducts);
 </script>
 
 <style scoped>
@@ -189,36 +209,44 @@ onMounted(fetchProducts)
 .product-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   gap: 24px;
 }
 
 .product-card {
-  width: calc(33.333% - 16px);
+  width: calc(25% - 18px);
   background-color: #fff;
-  color: #000;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+.product-card:hover {
+  transform: translateY(-4px);
 }
 
 .swiper-box {
   width: 100%;
-  height: 360px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #fff;
 }
 
 .product-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .product-info {
-  width: 100%;
-  padding: 10px 0;
+  padding: 12px;
   text-align: center;
+  background-color: #000000;
+  font-size: 14px;
 }
 
 .product-name {
@@ -230,6 +258,23 @@ onMounted(fetchProducts)
 .product-price {
   font-size: 14px;
   color: #e67e22;
+}
+
+.swiper-box :deep(.swiper-button-next),
+.swiper-box :deep(.swiper-button-prev) {
+  color: #333;
+  background: rgba(255, 255, 255, 0.7);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.swiper-box :deep(.swiper-button-next)::after,
+.swiper-box :deep(.swiper-button-prev)::after {
+  font-size: 14px;
 }
 
 /* 移动端适配 */

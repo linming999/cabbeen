@@ -119,7 +119,7 @@ export default {
 }
 
 .subtitle {
-  color: #ffc107;
+  color: #f39c12;
   font-size: 1.2rem;
 }
 
@@ -173,7 +173,7 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  color: #ffc107;
+  color: #f39c12;
   text-decoration: none;
   font-size: 1.1rem;
   transition: color 0.2s;
@@ -186,7 +186,7 @@ export default {
 
 .file-name {
   font-weight: 700;
-  color: #ffc107;
+  color: #f39c12;
 }
 
 .file-date {
@@ -208,8 +208,8 @@ export default {
 .load-more-btn {
   padding: 10px 30px;
   background: transparent;
-  border: 1px solid #ffc107;
-  color: #ffc107;
+  border: 1px solid #f39c12;
+  color: #f39c12;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
@@ -217,7 +217,7 @@ export default {
 }
 
 .load-more-btn:hover {
-  background: #ffc107;
+  background: #f39c12;
   color: #000;
 }
 </style>

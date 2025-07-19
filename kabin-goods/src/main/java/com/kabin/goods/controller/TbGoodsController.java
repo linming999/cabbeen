@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kabin.common.core.domain.R;
+import com.kabin.goods.domain.dto.GoodsDetailDto;
 import com.kabin.goods.domain.dto.GoodsDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -136,5 +137,19 @@ public class TbGoodsController extends BaseController
         List<GoodsDto> list = tbGoodsService.getGoodsWithImagesByCategory(category);
         return R.ok(list);
     }
+
+    /**
+     * 获取商品详情（含多个款式图）
+     */
+    @GetMapping("/detail/{id}")
+    @ApiOperation("获取商品详情信息")
+    public R<GoodsDetailDto> getDetail(@PathVariable("id") Long id) {
+        GoodsDetailDto detail = tbGoodsService.getGoodsDetailById(id);
+        if (detail != null) {
+            return R.ok(detail);
+        }
+        return R.fail("商品不存在");
+    }
+
 
 }

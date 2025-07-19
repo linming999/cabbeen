@@ -7,6 +7,7 @@ import Contact from '../views/Contact.vue' // 联系我们
 import OfflineStore from '../views/OfflineStore.vue' // 线下门店导流
 import FindStore from '../views/FindStore.vue' // 寻找精品店
 import FinancialReport from '../views/FinancialReport.vue' // 财务报表
+import ProductDetail from '../views/product/ProductDetail.vue' //  商品详情页路由
 // ✅ 新闻详情页组件
 import NewsMalaysia from '../views/news/NewsMalaysia.vue';
 import NewsHKListing from '../views/news/NewsHKListing.vue';
@@ -20,6 +21,7 @@ const routes = [
   { path: '/offline-store', component: OfflineStore },
   { path: '/find-store', component: FindStore },
   { path: '/financial-report', component: FinancialReport },
+  { path: '/product/detail/:id', component: ProductDetail },
     // ✅ 新增新闻详情页路由
   { path: '/news/malaysia', component: NewsMalaysia },
   { path: '/news/hk-listing', component: NewsHKListing },

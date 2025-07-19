@@ -1,5 +1,6 @@
 package com.kabin.goods.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kabin.common.utils.DateUtils;
 import com.kabin.goods.domain.TbGoodsImage;
 import com.kabin.goods.domain.TbGoodsType;
+import com.kabin.goods.domain.dto.GoodsDetailDto;
 import com.kabin.goods.domain.dto.GoodsDto;
 import com.kabin.goods.mapper.TbGoodsImageMapper;
 import com.kabin.goods.mapper.TbGoodsTypeMapper;
@@ -18,6 +20,7 @@ import com.kabin.goods.service.ITbGoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +59,23 @@ public class TbGoodsServiceImpl extends ServiceImpl<TbGoodsMapper, TbGoods> impl
      */
     @Override
     public List<TbGoods> selectTbGoodsList(TbGoods tbGoods) {
-        return tbGoodsMapper.selectTbGoodsList(tbGoods);
+        List<TbGoods> list = tbGoodsMapper.selectTbGoodsList(tbGoods);
+
+        // 分类ID转中文名
+        Map<String, String> typeMap = tbGoodsTypeMapper.selectList(null).stream()
+                .collect(Collectors.toMap(
+                        t -> String.valueOf(t.getId()),
+                        TbGoodsType::getType
+                ));
+
+        for (TbGoods goods : list) {
+            String typeId = goods.getType();
+            if (typeMap.containsKey(typeId)) {
+                goods.setType(typeMap.get(typeId)); // 替换为中文名显示
+            }
+        }
+
+        return list;
     }
 
     /**
@@ -67,9 +86,21 @@ public class TbGoodsServiceImpl extends ServiceImpl<TbGoodsMapper, TbGoods> impl
      */
     @Override
     public int insertTbGoods(TbGoods tbGoods) {
+        // 新增前：将分类名称转为分类ID（仅当前端传入的是名称时）
+        if (tbGoods.getType() != null && !tbGoods.getType().isEmpty()) {
+            TbGoodsType goodsType = tbGoodsTypeMapper.selectOne(
+                    new LambdaQueryWrapper<TbGoodsType>()
+                            .eq(TbGoodsType::getType, tbGoods.getType())  // 用名称查
+            );
+            if (goodsType != null) {
+                tbGoods.setType(String.valueOf(goodsType.getId()));  // 存ID
+            } else {
+                throw new RuntimeException("找不到对应的商品分类: " + tbGoods.getType());
+            }
+        }
+
         return save(tbGoods) ? 1 : 0;
     }
-
     /**
      * 修改商品信息
      *
@@ -158,4 +189,43 @@ public class TbGoodsServiceImpl extends ServiceImpl<TbGoodsMapper, TbGoods> impl
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public GoodsDetailDto getGoodsDetailById(Long goodsId) {
+        TbGoods good = this.getById(goodsId);
+        if (good == null) {
+            return null;
+        }
+
+        List<TbGoodsImage> allImages = tbGoodsImageMapper.selectList(
+                new LambdaQueryWrapper<TbGoodsImage>()
+                        .eq(TbGoodsImage::getGoodId, goodsId)
+                        .orderByAsc(TbGoodsImage::getSort)
+        );
+
+        Map<String, List<TbGoodsImage>> styleMap = allImages.stream()
+                .collect(Collectors.groupingBy(TbGoodsImage::getStyle));
+
+        List<GoodsDetailDto.StyleDto> styles = styleMap.entrySet().stream().map(entry -> {
+            GoodsDetailDto.StyleDto s = new GoodsDetailDto.StyleDto();
+            s.setStyle(entry.getKey());
+            s.setImages(entry.getValue().stream().map(TbGoodsImage::getImage).collect(Collectors.toList()));
+            s.setCover(entry.getValue().stream()
+                    .filter(img -> img.getIsMain() != null && img.getIsMain() == 1)
+                    .map(TbGoodsImage::getImage)
+                    .findFirst()
+                    .orElse(s.getImages().get(0))); // fallback 主图
+            return s;
+        }).collect(Collectors.toList());
+
+        GoodsDetailDto dto = new GoodsDetailDto();
+        dto.setId(good.getId());
+        dto.setName(good.getGoodName());
+        dto.setPrice(Double.valueOf(good.getGoodPrice()));
+        dto.setDescription(good.getGoodDescribe());
+        dto.setStyles(styles);
+
+        return dto;
+    }
+
 }
