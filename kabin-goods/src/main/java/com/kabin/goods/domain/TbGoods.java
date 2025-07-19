@@ -66,5 +66,9 @@ public class TbGoods extends BaseEntity
     @ApiModelProperty(value = "商品价格")
     private Double goodPrice;
 
+    /** 商品状态（0=上架，1=下架） */
+    @ApiModelProperty(value = "商品状态")
+    private Integer status;
+
 
 }

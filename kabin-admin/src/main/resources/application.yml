@@ -57,9 +57,9 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-      max-file-size: 10MB
+      max-file-size: 20MB
       # 设置总上传的文件大小
-      max-request-size: 20MB
+      max-request-size: 50MB
   # 服务模块
   devtools:
     restart:
@@ -134,6 +134,6 @@ xss:
 # 阿里云OSS相关配置
 aliyun:
   oss:
-    endpoint: https://oss-cn-shenzhen.aliyuncs.com
-    bucketName: java-ai-web-lin
+    endpoint: https://oss-cn-hongkong.aliyuncs.com
+    bucketName: cabbeen
 # 百度千帆大模型配置

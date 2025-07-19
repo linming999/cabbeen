@@ -94,6 +94,28 @@
           >导出</el-button
         >
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          plain
+          icon="el-icon-bottom"
+          size="mini"
+          :disabled="multiple"
+          @click="batchChangeStatus(1)"
+          >下架</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-top"
+          size="mini"
+          :disabled="multiple"
+          @click="batchChangeStatus(0)"
+          >上架</el-button
+        >
+      </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
         @queryTable="getList"
@@ -112,6 +134,13 @@
       <el-table-column label="商品描述" align="center" prop="goodDescribe" />
       <el-table-column label="商品类别" align="center" prop="type" />
       <el-table-column label="价格" align="center" prop="goodPrice" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.status === 0 ? 'success' : 'info'">
+            {{ scope.row.status === 0 ? "已上架" : "已下架" }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         align="center"
@@ -247,6 +276,7 @@ import {
   delGood,
   addGood,
   updateGood,
+  changeStatus ,
 } from "@/api/goods/good";
 import { getTypeTree } from "@/api/goods/type";
 import { addStyle, listStyle, replaceStyle } from "@/api/goods/style";
@@ -371,6 +401,22 @@ export default {
     // 删除一个款式
     removeStyle(index) {
       this.styleList.splice(index, 1);
+    },
+
+    batchChangeStatus(status) {
+      const ids = this.ids;
+      if (ids.length === 0) {
+        this.$message.warning("请先选择商品");
+        return;
+      }
+
+      const action = status === 0 ? "上架" : "下架";
+      this.$modal.confirm(`是否确认${action}选中的商品？`).then(() => {
+        changeStatus(ids, status).then(() => {
+          this.$modal.msgSuccess(`${action}成功`);
+          this.getList();
+        });
+      });
     },
 
     // 上传前校验

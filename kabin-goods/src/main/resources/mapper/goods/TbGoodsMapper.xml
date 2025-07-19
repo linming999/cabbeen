@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTbGoodsVo">
-        select id, good_cover, good_name, good_describe, type, good_price, create_by, create_time, update_by, update_time from tb_goods
+        select id, good_cover, good_name, good_describe, type, good_price, create_by, create_time, update_by, update_time,status from tb_goods
     </sql>
 
     <select id="selectTbGoodsList" parameterType="TbGoods" resultMap="TbGoodsResult">
@@ -28,6 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="goodName != null  and goodName != ''"> and good_name like concat('%', #{goodName}, '%')</if>
             <if test="goodDescribe != null  and goodDescribe != ''"> and good_describe = #{goodDescribe}</if>
             <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="status != null"> AND status = #{status} </if>
         </where>
     </select>
     
@@ -48,6 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="goodCover != null">#{goodCover},</if>
@@ -59,6 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
          </trim>
     </insert>
 
@@ -74,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-
+            <if test="status != null">status = #{status},</if>
         </trim>
         where id = #{id}
     </update>
@@ -89,4 +92,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <update id="updateStatusBatch">
+        UPDATE tb_goods
+        SET status = #{status}
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

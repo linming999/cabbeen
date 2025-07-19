@@ -50,3 +50,11 @@ export function getCategory() {
     method: 'get'
   })
 }
+
+export function changeStatus(ids, status) {
+  return request({
+    url: '/goods/good/updateStatus',
+    method: 'put',
+    data: { ids, status }
+  });
+}

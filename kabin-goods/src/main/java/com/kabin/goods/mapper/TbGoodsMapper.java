@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 import com.kabin.goods.domain.TbGoods;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 商品信息Mapper接口
@@ -61,4 +62,7 @@ public interface TbGoodsMapper extends BaseMapper<TbGoods>
      * @return 结果
      */
     public int deleteTbGoodsByIds(Long[] ids);
+
+    int updateStatusBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
+
 }

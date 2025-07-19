@@ -16,20 +16,6 @@
         @click="handleMainNavClick('store')"
       >
         <span>{{ $t("navbar.store") }}</span>
-        <ul class="dropdown-menu" v-show="showDropdown.store">
-          <li @click.stop="goTo('/store/men')">
-            {{ $t("navbar.menFashion") }}
-          </li>
-          <li @click.stop="goTo('/store/shoes')">
-            {{ $t("navbar.cabbeenShoes") }}
-          </li>
-          <li @click.stop="goTo('/store/trend')">
-            {{ $t("navbar.trendAlbum") }}
-          </li>
-          <li @click.stop="goTo('/store/new')">
-            {{ $t("navbar.newArrivals") }}
-          </li>
-        </ul>
       </div>
 
       <!-- 常规导航 -->
@@ -141,28 +127,9 @@
           {{ $t("navbar.financialReport") }}
         </div>
 
-        <!-- 卡宾精品子菜单 -->
-        <div class="mobile-item dropdown" @click="toggleSubMenu">
-          <div class="dropdown-title">
-            <span>{{ $t("navbar.store") }}</span>
-            <span class="arrow">{{ subMenuOpen ? "▲" : "▼" }}</span>
-          </div>
-          <transition name="expand">
-            <ul class="dropdown-menu" v-show="subMenuOpen">
-              <li @click.stop="handleMobileNavigate('/store/men')">
-                {{ $t("navbar.menFashion") }}
-              </li>
-              <li @click.stop="handleMobileNavigate('/store/shoes')">
-                {{ $t("navbar.cabbeenShoes") }}
-              </li>
-              <li @click.stop="handleMobileNavigate('/store/trend')">
-                {{ $t("navbar.trendAlbum") }}
-              </li>
-              <li @click.stop="handleMobileNavigate('/store/new')">
-                {{ $t("navbar.newArrivals") }}
-              </li>
-            </ul>
-          </transition>
+        <!-- 卡宾精品 -->
+        <div class="mobile-item" @click="handleMobileNavigate('/store')">
+          {{ $t("navbar.store") }}
         </div>
 
         <!-- 登录和语言 -->
@@ -228,12 +195,10 @@ export default {
       // 下拉菜单显示状态
       showDropdown: {
         contact: false,
-        store: false,
       },
       // 点击时间记录
       lastClick: {
         contact: 0,
-        store: 0,
       },
     };
   },
@@ -260,11 +225,11 @@ export default {
       document.title = this.$t("title");
     },
     toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-    // 关闭其他可能打开的下拉菜单
-    this.subMenuOpen = false;
-    this.mobileContactSubOpen = false;
-  },
+      this.menuOpen = !this.menuOpen;
+      // 关闭其他可能打开的下拉菜单
+      this.subMenuOpen = false;
+      this.mobileContactSubOpen = false;
+    },
     handleLogin() {
       if (!this.loginForm.username || !this.loginForm.password) {
         alert("Please enter username and password");
@@ -278,15 +243,18 @@ export default {
 
     // 核心逻辑：点击展开或跳转
     handleMainNavClick(key) {
+      // 特殊处理：如果是 store，直接跳转
+      if (key === "store") {
+        this.$router.push("/store");
+        return;
+      }
+
       const now = Date.now();
       if (now - this.lastClick[key] < 500) {
-        // 快速双击 => 跳转主页面
         this.$router.push(`/${key}`);
         this.showDropdown[key] = false;
       } else {
-        // 展开/收起菜单
         this.showDropdown[key] = !this.showDropdown[key];
-        // 收起其他菜单
         Object.keys(this.showDropdown).forEach((k) => {
           if (k !== key) this.showDropdown[k] = false;
         });
