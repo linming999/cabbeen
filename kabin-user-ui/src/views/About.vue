@@ -18,18 +18,47 @@
         :modules="modules"
         class="mySwiper"
       >
-        <swiper-slide
-          ><img src="@/assets/images/大图1.png" alt="Image 1"
-        /></swiper-slide>
-        <swiper-slide
-          ><img src="@/assets/images/大图3.png" alt="Image 2"
-        /></swiper-slide>
-        <swiper-slide
-          ><img src="@/assets/images/大图2.png" alt="Image 3"
-        /></swiper-slide>
-        <swiper-slide
-          ><img src="@/assets/images/大图4.png" alt="Image 4"
-        /></swiper-slide>
+        <swiper-slide>
+          <picture>
+            <!-- 移动端竖版 -->
+            <source
+              media="(max-width: 768px)"
+              srcset="@/assets/images/大图11.png"
+            />
+            <!-- PC 横版（原图） -->
+            <img src="@/assets/images/大图1.png" alt="Image 1" />
+          </picture>
+        </swiper-slide>
+
+        <swiper-slide>
+          <picture>
+            <source
+              media="(max-width: 768px)"
+              srcset="@/assets/images/大图12.png"
+            />
+            <img src="@/assets/images/大图3.png" alt="Image 2" />
+          </picture>
+        </swiper-slide>
+
+        <swiper-slide>
+          <picture>
+            <source
+              media="(max-width: 768px)"
+              srcset="@/assets/images/大图13.png"
+            />
+            <img src="@/assets/images/大图2.png" alt="Image 3" />
+          </picture>
+        </swiper-slide>
+
+        <swiper-slide>
+          <picture>
+            <source
+              media="(max-width: 768px)"
+              srcset="@/assets/images/大图14.png"
+            />
+            <img src="@/assets/images/大图4.png" alt="Image 4" />
+          </picture>
+        </swiper-slide>
       </swiper>
       <div class="swiper-button-next"></div>
       <div class="swiper-button-prev"></div>
@@ -153,9 +182,9 @@ import "swiper/css/autoplay";
 
 import { ref, onMounted, onBeforeUnmount, computed } from "vue"; // ✅ 补全 computed
 import { useI18n } from "vue-i18n"; // ✅ 补全导入
-import newsThumb1 from '@/assets/images/新闻缩略图1.png';
-import newsThumb2 from '@/assets/images/新闻缩略图2.png';
-import newsThumb3 from '@/assets/images/新闻缩略图3.png';
+import newsThumb1 from "@/assets/images/新闻缩略图1.png";
+import newsThumb2 from "@/assets/images/新闻缩略图2.png";
+import newsThumb3 from "@/assets/images/新闻缩略图3.png";
 
 export default {
   name: "Home",
@@ -178,17 +207,15 @@ export default {
     });
 
     const newsList = computed(() => {
-      return getLocaleMessage(locale.value).news?.cards?.map((card, index) => ({
-        ...card,
-        date: [
-          "2025-06-08", 
-          "2013-10-28", 
-          "2007-02-03"
-        ][index],
-        views: [835, 1210, 1985][index],
-        image: newsThumbs[index],
-        link: ["/news/malaysia", "/news/hk-listing", "/news/ny-show"][index]
-      })) || [];
+      return (
+        getLocaleMessage(locale.value).news?.cards?.map((card, index) => ({
+          ...card,
+          date: ["2025-06-08", "2013-10-28", "2007-02-03"][index],
+          views: [835, 1210, 1985][index],
+          image: newsThumbs[index],
+          link: ["/news/malaysia", "/news/hk-listing", "/news/ny-show"][index],
+        })) || []
+      );
     });
 
     const currentIndex = ref(0);
@@ -488,7 +515,7 @@ export default {
 
 .news-list {
   display: flex;
-  flex-wrap: wrap;  /* 允许换行，避免超出屏幕 */
+  flex-wrap: wrap; /* 允许换行，避免超出屏幕 */
   justify-content: center;
   gap: 30px;
   padding: 0 40px; /* ✅ 添加左右留白 */
@@ -671,12 +698,12 @@ export default {
   }
   .news-list {
     flex-direction: column; /* 竖排布局 */
-    align-items: center;  /* 使新闻卡片在竖排时居中 */
-    padding: 0 10px;  /* 为了适应小屏幕，增加左右内边距 */
+    align-items: center; /* 使新闻卡片在竖排时居中 */
+    padding: 0 10px; /* 为了适应小屏幕，增加左右内边距 */
   }
 
   .news-item {
-    flex: 1 1 auto;  /* 取消 PC 端的宽度限制，适应小屏 */
+    flex: 1 1 auto; /* 取消 PC 端的宽度限制，适应小屏 */
     max-width: 90%; /* 最大宽度90%，避免过宽 */
     margin: 10px 0; /* 添加间隔 */
   }
@@ -691,7 +718,8 @@ export default {
   }
 
   /* 使得新闻模块的标题也能适应移动端 */
-  .news-title .zh, .news-title .en {
+  .news-title .zh,
+  .news-title .en {
     font-size: 22px;
   }
 }
