@@ -72,9 +72,9 @@
     <div class="product-grid">
       <div v-for="item in products" :key="item.id" class="product-card">
         <Swiper
-          :modules="[Navigation]"
+          :modules="[Pagination]"
           :loop="true"
-          navigation
+          :pagination="{ clickable: true }"
           class="swiper-box"
         >
           <SwiperSlide v-for="(img, i) in item.imageList" :key="i">
@@ -96,19 +96,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeMount } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import request from "@/utils/request";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
+const route = useRoute();
+const storePage = ref(null);
 
+onMounted(() => {
+  if (route.query.scrollY) {
+    setTimeout(() => {
+      window.scrollTo(0, Number(route.query.scrollY));
+    }, 0);
+  }
+});
+
+// 点击商品时保存滚动位置
 const goToDetail = (id) => {
-  router.push(`/product/detail/${id}`);
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+  router.push({
+    path: `/product/detail/${id}`,
+    query: { scrollY },
+  });
 };
-
 // 分类数据
 const menswearup = [
   "T恤",
@@ -262,25 +276,115 @@ onMounted(fetchProducts);
 
 .swiper-box :deep(.swiper-button-next),
 .swiper-box :deep(.swiper-button-prev) {
-  color: #333;
-  background: rgba(255, 255, 255, 0.7);
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
+  display: none !important;
 }
+
 
 .swiper-box :deep(.swiper-button-next)::after,
 .swiper-box :deep(.swiper-button-prev)::after {
   font-size: 14px;
 }
 
-/* 移动端适配 */
+.swiper-box :deep(.swiper-pagination) {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+.swiper-box :deep(.swiper-pagination-bullet) {
+  width: 6px;
+  height: 6px;
+  margin: 0 3px !important;
+  background-color: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+  transition: all 0.3s;
+}
+
+.swiper-box :deep(.swiper-pagination-bullet-active) {
+  background-color: #fff;
+  width: 12px;
+  border-radius: 3px;
+}
+
+
 @media (max-width: 768px) {
+  .product-grid {
+    gap: 12px;
+    padding: 0 8px;
+    justify-content: space-between;
+    margin: 0 -4px;
+  }
+
   .product-card {
+    width: calc(50% - 6px);
+    margin-bottom: 12px;
+    border-radius: 8px;
+  }
+
+  .swiper-box {
+    aspect-ratio: 3 / 4; /* 改为正方形比例 */
+  }
+
+  .product-info {
+    padding: 8px;
+  }
+
+  .product-name {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .product-price {
+    font-size: 13px;
+  }
+
+  /* 缩小导航按钮 */
+  .swiper-box :deep(.swiper-button-next),
+  .swiper-box :deep(.swiper-button-prev) {
+    width: 20px;
+    height: 20px;
+  }
+
+  .swiper-box :deep(.swiper-button-next)::after,
+  .swiper-box :deep(.swiper-button-prev)::after {
+    font-size: 10px;
+  }
+
+  /* 分类菜单调整 */
+  .category-block.inline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .category-title {
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .category-items {
     width: 100%;
+    padding-bottom: 8px;
+  }
+
+  .category-items span {
+    font-size: 13px;
+    margin-right: 10px;
+  }
+
+  .swiper-box :deep(.swiper-pagination-bullet) {
+    width: 4px;
+    height: 4px;
+    margin: 0 2px !important;
+  }
+  
+  .swiper-box :deep(.swiper-pagination-bullet-active) {
+    width: 8px;
   }
 }
 </style>

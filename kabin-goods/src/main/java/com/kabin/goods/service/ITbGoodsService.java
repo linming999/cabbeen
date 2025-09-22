@@ -68,5 +68,4 @@ public interface ITbGoodsService extends IService<TbGoods>
     List<GoodsDto> getGoodsWithImagesByCategory(String category);
 
     GoodsDetailDto getGoodsDetailById(Long goodsId);
-
 }

@@ -1,13 +1,12 @@
 <template>
   <div class="product-detail-page" v-if="product">
     <!-- 返回按钮 -->
-    <button class="back-button" @click="router.back()">← 返回</button>
 
     <div class="main-section">
       <!-- 主图横向展示 -->
       <swiper
         class="hermes-swiper"
-        :slides-per-view="'auto'"
+        :slides-per-view="isMobile ? 1 : 'auto'"
         :space-between="0"
         :pagination="{
           el: '.hermes-swiper-pagination',
@@ -16,15 +15,25 @@
           bulletActiveClass: 'swiper-pagination-bullet-active',
         }"
         :modules="[Pagination, FreeMode]"
-        :free-mode="true"
+        :free-mode="!isMobile"
         @swiper="onSwiperReady"
         @slide-change="onSlideChange"
       >
+      <button 
+        class="back-button"
+        @click="handleBack"
+        slot="container-start"
+      >
+        ← 返回
+      </button>
         <swiper-slide
           v-for="(img, i) in currentStyle.images"
           :key="i"
           class="hermes-slide"
-          style="width: 761px; height: 1000px"
+          :style="{
+            width: isMobile ? '100%' : '761px',
+            height: isMobile ? 'auto' : '1000px',
+          }"
         >
           <img
             :src="img"
@@ -33,24 +42,13 @@
             draggable="false"
           />
         </swiper-slide>
-        <!-- 透明补白slide：确保info-box不遮住最后一张图片 -->
-        <swiper-slide
-          key="ghost"
-          class="hermes-slide-ghost"
-          style="
-            width: 440px;
-            height: 1000px;
-            background: transparent;
-            box-shadow: none;
-            pointer-events: none;
-          "
-        ></swiper-slide>
 
+        <!-- 移除 ghost 部分，避免留白 -->
         <div class="hermes-swiper-pagination" slot="pagination"></div>
       </swiper>
 
-      <!-- 缩略图切换栏 -->
-      <div class="hermes-thumbs-bar">
+      <!-- PC端缩略图切换栏 -->
+      <div class="hermes-thumbs-bar" v-if="!isMobile">
         <div
           v-for="(img, i) in currentStyle.images"
           :key="i"
@@ -63,7 +61,7 @@
       </div>
 
       <!-- 信息卡片 -->
-      <div class="info-box">
+      <div class="info-box" :class="{ 'mobile-info-box': isMobile }">
         <h2>{{ product.name }}</h2>
         <p class="product-price">¥{{ product.price }}</p>
 
@@ -84,13 +82,13 @@
         </div>
 
         <p class="product-desc">{{ product.description }}</p>
-      </div>
+        </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, onBeforeUnmount } from "vue";  
 import { useRoute, useRouter } from "vue-router";
 import request from "@/utils/request";
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -106,6 +104,20 @@ const currentStyle = ref({});
 const currentImage = ref("");
 const mainSwiper = ref(null);
 const currentImageIndex = ref(0);
+const isMobile = ref(window.innerWidth <= 768);
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth <= 768;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  fetchDetail();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
 
 const setSwiper = (swiper) => {
   mainSwiper.value = { swiper };
@@ -115,7 +127,6 @@ const onSwiperReady = (swiperInstance) => {
   mainSwiper.value = swiperInstance;
 };
 const goToSlide = (i) => {
-  // mainSwiper.value 必须是真正的 swiper 实例
   if (mainSwiper.value && typeof mainSwiper.value.slideTo === "function") {
     mainSwiper.value.slideTo(i);
   } else {
@@ -125,6 +136,15 @@ const goToSlide = (i) => {
 
 const onSlideChange = (swiper) => {
   currentImageIndex.value = swiper.activeIndex;
+};
+// 处理返回逻辑
+const handleBack = () => {
+  // 从路由查询参数中获取滚动位置
+  const scrollY = route.query.scrollY || 0;
+  router.push({
+    path: '/store', // 你的商品列表页路由
+    query: { scrollY }
+  });
 };
 // 获取商品详情
 const fetchDetail = async () => {
@@ -147,16 +167,15 @@ const fetchDetail = async () => {
 
 const selectStyle = async (style) => {
   currentStyle.value = style;
-  currentImageIndex.value = 0; // 同步主图索引
-  await nextTick(); // 等 DOM 更新
-  mainSwiper.value?.swiper?.slideTo(0); // Swiper 回到第一张
+  currentImageIndex.value = 0;
+  await nextTick();
+  mainSwiper.value?.swiper?.slideTo(0);
 };
-
-onMounted(fetchDetail);
 </script>
 
 <style scoped>
-body, html {
+body,
+html {
   height: 100%;
   background: #f6f1e7;
 }
@@ -168,18 +187,41 @@ body, html {
   background: #f6f1e7;
 }
 
-.back-button {
-  position: absolute;
+/* 新增返回按钮样式 */
+.top-left-button {
+  position: fixed;
   top: 20px;
   left: 20px;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 6px 16px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
   border: none;
   border-radius: 20px;
-  cursor: pointer;
+  padding: 8px 16px;
   font-size: 16px;
+  cursor: pointer;
+  display: none; /* 默认隐藏 */
+  white-space: nowrap;
+  backdrop-filter: blur(5px); /* 毛玻璃效果 */
 }
 
 .main-section {
@@ -190,13 +232,6 @@ body, html {
   margin: 0;
   padding: 0;
   min-height: 0;
-}
-.footer {
-  flex-shrink: 0;
-  width: 100vw;
-  background: #111;
-  color: #fff;
-  /* 其它footer样式 */
 }
 
 .image-gallery {
@@ -232,8 +267,8 @@ body, html {
 
 .image-gallery,
 .thumbnail-bar {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* 缩略图切换栏 */
@@ -258,27 +293,30 @@ body, html {
   border-color: #f39c12;
 }
 
-/* 右侧商品信息卡片 */
+/* 商品信息卡片 */
 .info-box {
   width: 380px;
   padding: 24px;
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   position: absolute;
-  top: 40px;
-  right: 40px;
-  border-radius: 10px;
+  top: 50%;
+  left: 75%;
+  transform: translateY(-80%);
   z-index: 10;
 }
 
+/* 商品名称 */
 .info-box h2 {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
+  margin-bottom: 16px;
 }
 
+/* 商品价格 */
 .product-price {
+  font-size: 14px;
   color: #e67e22;
-  font-size: 18px;
   margin: 10px 0;
 }
 
@@ -291,6 +329,7 @@ body, html {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  font-size: 14px;
 }
 
 .style-item {
@@ -324,12 +363,11 @@ body, html {
 }
 
 .color-row {
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 0 10px 0;
-  font-size: 18px;
-  font-weight: 500;
   border-bottom: 1px solid #d8d8d8;
   margin-bottom: 16px;
   color: #fff;
@@ -375,14 +413,6 @@ body, html {
   user-select: none;
   margin: 0;
 }
-.hermes-main-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  background: #fff;
-  pointer-events: none;
-  user-select: none;
-}
 
 .hermes-swiper-pagination {
   position: absolute;
@@ -408,7 +438,7 @@ body, html {
 }
 
 .hermes-slide-ghost {
-  width: 460px !important; /* 380+40+40 */
+  width: 460px !important;
   height: 1000px !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -423,15 +453,19 @@ body, html {
   gap: 4px;
   background: #fff;
   border-radius: 0;
-  box-shadow: 0 2px 10px 0 rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.08);
   padding: 4px 6px;
   z-index: 11;
   max-width: 22vw;
   height: 50px;
 }
 
-.hermes-thumbs-bar::-webkit-scrollbar { display: none; }
-.hermes-thumbs-bar { scrollbar-width: none; }
+.hermes-thumbs-bar::-webkit-scrollbar {
+  display: none;
+}
+.hermes-thumbs-bar {
+  scrollbar-width: none;
+}
 
 .hermes-thumb {
   width: 32px;
@@ -462,20 +496,87 @@ body, html {
   box-shadow: 0 0 0 1px #222;
 }
 
-/* 响应式处理 */
+
+
+/* 移动端样式 */
 @media (max-width: 768px) {
   .main-section {
+    display: flex;
     flex-direction: column;
   }
-  .image-gallery {
-    flex-direction: row;
-    overflow-x: scroll;
+  
+  .hermes-swiper {
+    height: auto;
+    aspect-ratio: 3/4;
   }
+  
+  .hermes-slide {
+    width: 100% !important;
+    height: auto !important;
+  }
+  
+  .hermes-main-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3/4;
+  }
+  
   .info-box {
     position: static;
     width: 100%;
-    margin-top: 20px;
-    background: rgba(0, 0, 0, 0.8);
+    transform: none;
+    background: #fff;
+    color: #000;
+    padding: 16px;
+    margin-top: 0;
+  }
+  
+  .mobile-info-box {
+    padding: 16px;
+  }
+  
+  .mobile-info-box h2 {
+    color: #000;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  
+  .mobile-info-box .product-price {
+    color: #000;
+    font-size: 18px;
+    margin: 8px 0;
+  }
+  
+  .mobile-info-box .color-row,
+  .mobile-info-box .color-label,
+  .mobile-info-box .color-value {
+    color: #000;
+    border-bottom-color: #eee;
+  }
+  
+  .mobile-info-box .product-desc {
+    color: #666;
+    margin: 12px 0;
+  }
+  
+   .back-button {
+    display: block;
+    position: absolute; 
+    left: 20px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 16px;
+  }
+
+  .hermes-thumbs-bar {
+    display: none;
+  }
+
+  .hermes-swiper {
+    position: relative;
   }
 }
 </style>

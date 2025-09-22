@@ -136,4 +136,3 @@ aliyun:
   oss:
     endpoint: https://oss-cn-hongkong.aliyuncs.com
     bucketName: cabbeen
-# 百度千帆大模型配置
