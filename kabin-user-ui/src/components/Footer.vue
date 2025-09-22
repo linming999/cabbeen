@@ -23,7 +23,7 @@
       <!-- 页脚版权信息 -->
       <div class="footer-copyright">
         <p class="terms">{{ $t('footer.terms') }}</p>
-        <p class="domain-info">{{ $t('footer.domainInfo') }}</p> <!-- 新增域名信息 -->
+      <!--  <p class="domain-info">{{ $t('footer.domainInfo') }}</p>  新增域名信息 -->
       </div>
     </div>
   </div>

@@ -63,7 +63,7 @@ const messages = {
       website: "Website:http://WWW.CABBEENNY.COM",
       code: "Code:2030.HK",
       terms: "© Copyright 2025 CABBEEN FASHION (M) SDN BHD",
-      domainInfo: "ICP filing of domain name information",
+      //domainInfo: "ICP filing of domain name information",
     },
 
     //明星大图
@@ -258,7 +258,7 @@ const messages = {
       website: "官网：http://WWW.CABBEENNY.COM",
       code: "股票代码：2030.HK",
       terms: "版权所有 © 2025 卡宾时尚（马来西亚）私人有限公司",
-      domainInfo: "域名信息备案",
+      //domainInfo: "域名信息备案",
     },
 
     // 明星大图

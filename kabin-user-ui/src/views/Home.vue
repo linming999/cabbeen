@@ -81,11 +81,13 @@ const starImages = [
 .swiper-container {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
+  background: #000;
 }
 .mySwiper {
   width: 100%;
   height: 100%;
+  background: #000;
 }
 .mySwiper picture,
 .mySwiper img {
