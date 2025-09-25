@@ -216,29 +216,6 @@
         mobileContactSubOpen: false, 
         mobileStoreOpen: false, // 卡宾精品 一级开关
           openLv1: null, // 当前展开的一级标题
-          storeGroups: [
-      {
-        title: "男士精品上装",
-        items: [
-          "T恤",
-          "衬衫",
-          "西服",
-          "马甲",
-          "夹克",
-          "POLO",
-          "卫衣",
-          "线衫",
-          "休闲装",
-        ],
-      },
-      {
-        title: "男士精品下装",
-        items: ["休闲裤", "牛仔裤", "针织裤", "短裤", "内裤"],
-      },
-      { title: "卡宾潮鞋", items: ["休闲鞋", "板鞋", "拖凉鞋"] },
-      { title: "配件", items: ["箱包", "帽子", "腰带", "项链", "袜子", "领带"] },
-      { title: "新品上新", passThrough: "时尚达人限时折扣入口", items: [] },
-    ],
 
         loginForm: {
           username: "",
@@ -253,6 +230,60 @@
           contact: 0,
         },
       };
+    },
+    computed: {
+      storeGroups() {
+        return [
+          {
+            title: this.$t("categories.mensTops"),
+            items: [
+              this.$t("categories.tshirt"),
+              this.$t("categories.shirt"),
+              this.$t("categories.suit"),
+              this.$t("categories.vest"),
+              this.$t("categories.jacket"),
+              this.$t("categories.polo"),
+              this.$t("categories.sweatshirt"),
+              this.$t("categories.knitwear"),
+              this.$t("categories.casualWear"),
+            ],
+          },
+          {
+            title: this.$t("categories.mensBottoms"),
+            items: [
+              this.$t("categories.casualPants"), 
+              this.$t("categories.jeans"), 
+              this.$t("categories.knitPants"), 
+              this.$t("categories.shorts"), 
+              this.$t("categories.underwear")
+            ],
+          },
+          { 
+            title: this.$t("categories.cabbeenShoes"), 
+            items: [
+              this.$t("categories.casualShoes"), 
+              this.$t("categories.sneakers"), 
+              this.$t("categories.sandals")
+            ] 
+          },
+          { 
+            title: this.$t("categories.accessories"), 
+            items: [
+              this.$t("categories.bags"), 
+              this.$t("categories.hats"), 
+              this.$t("categories.belts"), 
+              this.$t("categories.necklaces"), 
+              this.$t("categories.socks"), 
+              this.$t("categories.ties")
+            ] 
+          },
+          { 
+            title: this.$t("categories.newArrivals"), 
+            passThrough: this.$t("categories.fashionistaDiscount"), 
+            items: [] 
+          },
+        ];
+      }
     },
   
     mounted() {

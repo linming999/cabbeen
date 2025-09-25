@@ -3,7 +3,7 @@
     <!-- 分类菜单 -->
     <div class="category-section">
       <div class="category-block inline">
-        <div class="category-title">男士精品上装：</div>
+        <div class="category-title">{{ $t("categories.mensTops") }}：</div>
         <div class="category-items">
           <span
             v-for="item in menswearup"
@@ -17,7 +17,7 @@
       </div>
 
       <div class="category-block inline">
-        <div class="category-title">男士精品下装：</div>
+        <div class="category-title">{{ $t("categories.mensBottoms") }}：</div>
         <div class="category-items">
           <span
             v-for="item in mensweardw"
@@ -31,7 +31,7 @@
       </div>
 
       <div class="category-block inline">
-        <div class="category-title">卡宾潮鞋：</div>
+        <div class="category-title">{{ $t("categories.cabbeenShoes") }}：</div>
         <div class="category-items">
           <span
             v-for="item in shoes"
@@ -45,7 +45,7 @@
       </div>
 
       <div class="category-block inline">
-        <div class="category-title">配件：</div>
+        <div class="category-title">{{ $t("categories.accessories") }}：</div>
         <div class="category-items">
           <span
             v-for="item in trend"
@@ -59,9 +59,9 @@
       </div>
 
       <div class="category-block inline">
-        <div class="category-title">新品上新：</div>
+        <div class="category-title">{{ $t("categories.newArrivals") }}：</div>
         <div class="category-items">
-          <span @click="selectCategory('新品上新')">时尚达人限时折扣入口</span>
+          <span @click="selectCategory($t('categories.newArrivals'))">{{ $t("categories.fashionistaDiscount") }}</span>
         </div>
       </div>
     </div>
@@ -96,25 +96,97 @@
 </template>
 
 <script setup>
-import { ref, watch, onActivated } from "vue";
+import { ref, watch, onActivated, computed } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import request from "@/utils/request";
 import { useRouter, useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 
 const router = useRouter();
 const route = useRoute();
 
-// 分类数据
-const menswearup = ["T恤","衬衫","西服","马甲","夹克","POLO","卫衣","线衫","休闲装"];
-const mensweardw = ["休闲裤","牛仔裤","针织裤","短裤","内裤"];
-const shoes = ["休闲鞋","板鞋","拖凉鞋"];
-const trend = ["箱包","帽子","腰带","项链","袜子","领带"];
+// 分类数据 - 使用 i18n 翻译
+const { t } = useI18n();
+
+// 将分类数组改为计算属性，支持语言切换
+const menswearup = computed(() => [
+  t("categories.tshirt"), t("categories.shirt"), t("categories.suit"), 
+  t("categories.vest"), t("categories.jacket"), t("categories.polo"), 
+  t("categories.sweatshirt"), t("categories.knitwear"), t("categories.casualWear")
+]);
+
+const mensweardw = computed(() => [
+  t("categories.casualPants"), t("categories.jeans"), t("categories.knitPants"), 
+  t("categories.shorts"), t("categories.underwear")
+]);
+
+const shoes = computed(() => [
+  t("categories.casualShoes"), t("categories.sneakers"), t("categories.sandals")
+]);
+
+const trend = computed(() => [
+  t("categories.bags"), t("categories.hats"), t("categories.belts"), 
+  t("categories.necklaces"), t("categories.socks"), t("categories.ties")
+]);
 
 // 当前分类 & 商品数据
-const currentCategory = ref("T恤"); // 兜底值
+const currentCategoryKey = ref('tshirt'); // 存储分类的key而不是翻译文本
+const currentCategory = computed(() => t(`categories.${currentCategoryKey.value}`));
+
+// 创建分类映射，用于在语言切换时保持选择状态
+const categoryMap = {
+  'T恤': 'tshirt',
+  'T-shirt': 'tshirt',
+  '衬衫': 'shirt', 
+  'Shirt': 'shirt',
+  '西服': 'suit',
+  'Suit': 'suit',
+  '马甲': 'vest',
+  'Vest': 'vest',
+  '夹克': 'jacket',
+  'Jacket': 'jacket',
+  'POLO': 'polo',
+  'Polo': 'polo',
+  '卫衣': 'sweatshirt',
+  'Sweatshirt': 'sweatshirt',
+  '线衫': 'knitwear',
+  'Knitwear': 'knitwear',
+  '休闲装': 'casualWear',
+  'Casual Wear': 'casualWear',
+  '休闲裤': 'casualPants',
+  'Casual Pants': 'casualPants',
+  '牛仔裤': 'jeans',
+  'Jeans': 'jeans',
+  '针织裤': 'knitPants',
+  'Knit Pants': 'knitPants',
+  '短裤': 'shorts',
+  'Shorts': 'shorts',
+  '内裤': 'underwear',
+  'Underwear': 'underwear',
+  '休闲鞋': 'casualShoes',
+  'Casual Shoes': 'casualShoes',
+  '板鞋': 'sneakers',
+  'Sneakers': 'sneakers',
+  '拖凉鞋': 'sandals',
+  'Sandals': 'sandals',
+  '箱包': 'bags',
+  'Bags': 'bags',
+  '帽子': 'hats',
+  'Hats': 'hats',
+  '腰带': 'belts',
+  'Belts': 'belts',
+  '项链': 'necklaces',
+  'Necklaces': 'necklaces',
+  '袜子': 'socks',
+  'Socks': 'socks',
+  '领带': 'ties',
+  'Ties': 'ties',
+  '新品上新': 'newArrivals',
+  'New Arrivals': 'newArrivals'
+};
 const products = ref([]);
 
 // 拉数
@@ -131,15 +203,27 @@ const fetchProducts = async () => {
 
 // 页内点击切换
 const selectCategory = (category) => {
-  currentCategory.value = category;
+  // 找到对应的分类key
+  const categoryKey = categoryMap[category];
+  if (categoryKey) {
+    currentCategoryKey.value = categoryKey;
+  } else {
+    // 如果找不到映射，直接使用传入的分类
+    currentCategoryKey.value = category;
+  }
   fetchProducts();
 };
 
-// ✅ 把“根据路由设置分类并拉数”提成函数
+// ✅ 把"根据路由设置分类并拉数"提成函数
 const applyRouteCategory = () => {
   const q = route.query?.category;
   if (typeof q === "string" && q.trim()) {
-    currentCategory.value = q.trim();
+    const categoryKey = categoryMap[q.trim()];
+    if (categoryKey) {
+      currentCategoryKey.value = categoryKey;
+    } else {
+      currentCategoryKey.value = q.trim();
+    }
   }
   fetchProducts();
 };
