@@ -160,7 +160,7 @@ import { Autoplay } from "swiper/modules";
 
 const storeMap = {
   store1: {
-    name: "Cabbeen卡宾@ Pavilion Bukit Jalil",
+    name: "CABBEEN卡宾@ Pavilion Bukit Jalil",
     lat: 3.05125,
     lng: 101.67022,
     address:
@@ -169,7 +169,7 @@ const storeMap = {
     phone: "+60 19-620 3028",
     email: "cabbeen.pvbj@ycinvest.com",
     Whatapp: "+60 19-620 3028",
-    link: "https://maps.google.com/?q=Cabbeen,+Pavilion+Bukit+Jalil",
+    link: "https://maps.google.com/?q=CABBEEN,+Pavilion+Bukit+Jalil",
     socialLinks: {
       facebook: "https://www.facebook.com/share/16UZ5ywBbH/",
       tiktok: "https://www.tiktok.com/@cabbeen.pvbj",
@@ -177,7 +177,7 @@ const storeMap = {
     },
   },
   store2: {
-    name: "Cabbeen卡宾@ Sunway Velocity",
+    name: "CABBEEN卡宾@ Sunway Velocity",
     lat: 3.12806,
     lng: 101.72393,
     address:
@@ -186,7 +186,7 @@ const storeMap = {
     phone: "+60 19-620 3026",
     email: "cabbeen.velocity@ycinvest.com",
     Whatapp: "+60 19-620 3028",
-    link: "https://maps.google.com/?q=Cabbeen卡宾+@+Sunway+Velocity",
+    link: "https://maps.google.com/?q=CABBEEN卡宾+@+Sunway+Velocity",
     socialLinks: {
       facebook: "https://www.facebook.com/share/18r3T295sB/",
       tiktok:

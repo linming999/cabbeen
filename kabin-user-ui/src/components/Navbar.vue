@@ -127,9 +127,59 @@
           {{ $t("navbar.financialReport") }}
         </div>
 
-        <!-- 卡宾精品 -->
-        <div class="mobile-item" @click="handleMobileNavigate('/store')">
-          {{ $t("navbar.store") }}
+        <!-- 卡宾精品（一级/二级下拉） -->
+        <div class="mobile-item dropdown" @click="toggleMobileStore">
+          <div class="dropdown-title">
+            <span>{{ $t("navbar.store") }}</span>
+            <span class="arrow">{{ mobileStoreOpen ? "▲" : "▼" }}</span>
+          </div>
+
+          <transition name="expand">
+            <!-- 注意：阻止事件冒泡，点击子项不触发外层收起 -->
+            <div
+              class="dropdown-menu two-level"
+              v-show="mobileStoreOpen"
+              @click.stop
+            >
+              <div
+                class="lv1-group"
+                v-for="group in storeGroups"
+                :key="group.title"
+              >
+                <!-- 一级标题 -->
+                <div class="lv1-title" @click="toggleLv1(group.title)">
+                  <span>{{ group.title }}</span>
+                  <span class="arrow mini">
+                    {{ openLv1 === group.title ? "−" : "+" }}
+                  </span>
+                </div>
+
+                <!-- 二级列表（有子项的展示为二级） -->
+                <ul
+                  class="lv2-list"
+                  v-if="group.items && group.items.length"
+                  v-show="openLv1 === group.title"
+                >
+                  <li
+                    v-for="sub in group.items"
+                    :key="sub"
+                    @click="selectStoreCategory(group.title, sub)"
+                  >
+                    {{ sub }}
+                  </li>
+                </ul>
+
+                <!-- 直达型（新品上新 / 时尚达人限时折扣入口） -->
+                <button
+                  v-else
+                  class="lv1-direct"
+                  @click="selectStoreCategory(group.title, group.passThrough)"
+                >
+                  {{ group.passThrough }}
+                </button>
+              </div>
+            </div>
+          </transition>
         </div>
 
         <!-- 登录和语言 -->
@@ -187,7 +237,33 @@ export default {
       menuOpen: false,
       subMenuOpen: false,
       loginDialogVisible: false,
-      mobileContactSubOpen: false, //
+      mobileContactSubOpen: false, 
+      mobileStoreOpen: false, // 卡宾精品 一级开关
+        openLv1: null, // 当前展开的一级标题
+         storeGroups: [
+    {
+      title: "男士精品上装",
+      items: [
+        "T恤",
+        "衬衫",
+        "西服",
+        "马甲",
+        "夹克",
+        "POLO",
+        "卫衣",
+        "线衫",
+        "休闲装",
+      ],
+    },
+    {
+      title: "男士精品下装",
+      items: ["休闲裤", "牛仔裤", "针织裤", "短裤", "内裤"],
+    },
+    { title: "卡宾潮鞋", items: ["休闲鞋", "板鞋", "拖凉鞋"] },
+    { title: "配件", items: ["箱包", "帽子", "腰带", "项链", "袜子", "领带"] },
+    { title: "新品上新", passThrough: "时尚达人限时折扣入口", items: [] },
+  ],
+
       loginForm: {
         username: "",
         password: "",
@@ -202,6 +278,7 @@ export default {
       },
     };
   },
+ 
   mounted() {
     this.checkWindow();
     window.addEventListener("resize", this.checkWindow);
@@ -210,6 +287,22 @@ export default {
     window.removeEventListener("resize", this.checkWindow);
   },
   methods: {
+    toggleMobileStore() {
+      this.mobileStoreOpen = !this.mobileStoreOpen;
+      if (!this.mobileStoreOpen) this.openLv1 = null;
+      // 互斥：打开“卡宾精品”时，收起“联系我们”
+      this.mobileContactSubOpen = false;
+    },
+
+    toggleLv1(title) {
+      this.openLv1 = this.openLv1 === title ? null : title;
+    },
+
+    // 选择二级分类（或直达型），跳到 /store，并通过 query 传递具体分类
+    selectStoreCategory(level1, subcat) {
+      this.$router.push({ path: "/store", query: { category: subcat } });
+      this.closeMobileMenu(); // 复用你已有的关闭方法
+    },
     isActive(path) {
       return this.$route.path === path && path !== "/";
     },
@@ -229,6 +322,8 @@ export default {
       // 关闭其他可能打开的下拉菜单
       this.subMenuOpen = false;
       this.mobileContactSubOpen = false;
+      this.mobileStoreOpen = false;
+      this.openLv1 = null;
     },
     handleLogin() {
       if (!this.loginForm.username || !this.loginForm.password) {
@@ -274,6 +369,8 @@ export default {
       this.menuOpen = false;
       this.subMenuOpen = false;
       this.mobileContactSubOpen = false;
+      this.mobileStoreOpen = false;
+      this.openLv1 = null;
     },
     handleMobileNavigate(path) {
       this.$router.push(path);
@@ -461,6 +558,30 @@ export default {
   .hamburger {
     display: block;
   }
+   .mobile-menu .dropdown-menu {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    min-width: 0 !important;
+    width: 100%;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+  .mobile-menu .dropdown-menu.two-level {
+    position: static !important;
+    background: transparent;
+    box-shadow: none;
+    width: 100%;
+    padding: 0; /* 你已有的 .two-level padding 如需保留可写到这里 */
+  }
+  .mobile-item.dropdown {
+    padding-bottom: 0;
+  }
+  .mobile-item.dropdown .two-level {
+    margin-top: 8px; 
+  }
 }
 
 .slide-fade-enter-active,
@@ -598,5 +719,68 @@ export default {
   .hamburger {
     display: block !important;
   }
+}
+
+.two-level {
+  padding: 6px 0 10px;
+  width: 100%;
+}
+
+.lv1-group + .lv1-group {
+  border-top: 1px solid #2a2a2a;
+}
+
+.lv1-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 4px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+.lv1-title .mini {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.lv2-list {
+  list-style: none;
+  padding: 4px 0 10px 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+}
+
+.lv2-list li {
+  padding: 8px 10px;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+.lv2-list li:hover {
+  background: #f39c12;
+  color: #111;
+  border-color: #f39c12;
+}
+
+.lv1-direct {
+  display: inline-block;
+  margin: 6px 0 12px 0;
+  padding: 8px 12px;
+  background: #f39c12;
+  color: #111;
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.lv1-direct:active {
+  transform: scale(0.98);
 }
 </style>

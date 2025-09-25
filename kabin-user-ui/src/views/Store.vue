@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div class="store-page">
     <!-- 分类菜单 -->
     <div class="category-section">
@@ -96,76 +96,78 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, watch, onActivated } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import request from "@/utils/request";
 import { useRouter, useRoute } from "vue-router";
+
 const router = useRouter();
 const route = useRoute();
-const storePage = ref(null);
 
-onMounted(() => {
-  if (route.query.scrollY) {
-    setTimeout(() => {
-      window.scrollTo(0, Number(route.query.scrollY));
-    }, 0);
-  }
-});
-
-// 点击商品时保存滚动位置
-const goToDetail = (id) => {
-  const scrollY = window.scrollY || document.documentElement.scrollTop;
-  router.push({
-    path: `/product/detail/${id}`,
-    query: { scrollY },
-  });
-};
 // 分类数据
-const menswearup = [
-  "T恤",
-  "衬衫",
-  "西服",
-  "马甲",
-  "夹克",
-  "POLO",
-  "卫衣",
-  "线衫",
-  "休闲装",
-];
-const mensweardw = ["休闲裤", "牛仔裤", "针织裤", "短裤", "内裤"];
-const shoes = ["休闲鞋", "板鞋", "拖凉鞋"];
-const trend = ["箱包", "帽子", "腰带", "项链", "袜子", "领带"];
+const menswearup = ["T恤","衬衫","西服","马甲","夹克","POLO","卫衣","线衫","休闲装"];
+const mensweardw = ["休闲裤","牛仔裤","针织裤","短裤","内裤"];
+const shoes = ["休闲鞋","板鞋","拖凉鞋"];
+const trend = ["箱包","帽子","腰带","项链","袜子","领带"];
 
 // 当前分类 & 商品数据
-const currentCategory = ref("T恤");
+const currentCategory = ref("T恤"); // 兜底值
 const products = ref([]);
 
-// 选择分类
-const selectCategory = (category) => {
-  currentCategory.value = category;
-  fetchProducts();
-};
-
-// 获取商品
+// 拉数
 const fetchProducts = async () => {
   try {
     const res = await request.get("/goods/good/listByCategory", {
       params: { category: currentCategory.value },
     });
-    // console.log(res.data);
-
     products.value = res.data || [];
-  } catch (err) {
-    console.error("获取商品失败", err);
+  } catch (e) {
+    console.error("获取商品失败", e);
   }
 };
 
-// 初始加载
-onMounted(fetchProducts);
+// 页内点击切换
+const selectCategory = (category) => {
+  currentCategory.value = category;
+  fetchProducts();
+};
+
+// ✅ 把“根据路由设置分类并拉数”提成函数
+const applyRouteCategory = () => {
+  const q = route.query?.category;
+  if (typeof q === "string" && q.trim()) {
+    currentCategory.value = q.trim();
+  }
+  fetchProducts();
+};
+
+// ✅ 用 watch 监听 query 变化，并且 immediate 立即执行一次（替代你两个 onMounted）
+watch(
+  () => route.query.category,
+  () => {
+    applyRouteCategory();
+    // （可选）移动端滚到商品区
+    requestAnimationFrame(() => {
+      const top = document.querySelector(".product-grid")?.getBoundingClientRect().top || 0;
+      window.scrollTo({ top: window.scrollY + top - 12, behavior: "smooth" });
+    });
+  },
+  { immediate: true }
+);
+
+// （可选）如果此页被 keep-alive 缓存，激活时也同步一次
+onActivated(() => applyRouteCategory());
+
+// 商品详情跳转（保持你的逻辑）
+const goToDetail = (id) => {
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+  router.push({ path: `/product/detail/${id}`, query: { scrollY } });
+};
 </script>
+
 
 <style scoped>
 .store-page {
@@ -385,6 +387,17 @@ onMounted(fetchProducts);
   
   .swiper-box :deep(.swiper-pagination-bullet-active) {
     width: 8px;
+  }
+  .category-section {
+    display: none !important;
+  }
+  .category-divider {
+    display: none !important;
+  }
+
+  /* 可选：略微收紧内边距，避免顶部显得空 */
+  .store-page {
+    padding-top: 12px;
   }
 }
 </style>
