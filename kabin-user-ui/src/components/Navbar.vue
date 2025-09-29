@@ -279,8 +279,10 @@
           },
           { 
             title: this.$t("categories.newArrivals"), 
-            passThrough: this.$t("categories.fashionistaDiscount"), 
-            items: [] 
+            items: [
+              this.$t("categories.celebrityStyle"),
+              this.$t("categories.fashionistaDiscount")
+            ]
           },
         ];
       }

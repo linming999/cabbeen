@@ -83,6 +83,7 @@ const messages = {
       socks: "Socks",
       ties: "Ties",
       newArrivals: "New Arrivals",
+      celebrityStyle: "Celebrity Style",
       fashionistaDiscount: "Fashionista Limited-time Discount Entrance"
     },
     footer: {
@@ -309,6 +310,7 @@ const messages = {
       socks: "袜子",
       ties: "领带",
       newArrivals: "新品上新",
+      celebrityStyle: "明星同款",
       fashionistaDiscount: "时尚达人限时折扣入口"
     },
     footer: {

@@ -61,7 +61,14 @@
       <div class="category-block inline">
         <div class="category-title">{{ $t("categories.newArrivals") }}：</div>
         <div class="category-items">
-          <span @click="selectCategory($t('categories.newArrivals'))">{{ $t("categories.fashionistaDiscount") }}</span>
+          <span
+            v-for="item in newArrivals"
+            :key="item"
+            @click="selectCategory(item)"
+            :class="{ active: currentCategory === item }"
+          >
+            {{ item }}
+          </span>
         </div>
       </div>
     </div>
@@ -132,6 +139,11 @@ const trend = computed(() => [
   t("categories.necklaces"), t("categories.socks"), t("categories.ties")
 ]);
 
+const newArrivals = computed(() => [
+  t("categories.celebrityStyle"),
+  t("categories.fashionistaDiscount")
+]);
+
 // 当前分类 & 商品数据
 const currentCategoryKey = ref('tshirt'); // 存储分类的key而不是翻译文本
 const currentCategory = computed(() => t(`categories.${currentCategoryKey.value}`));
@@ -184,6 +196,10 @@ const categoryMap = {
   'Socks': 'socks',
   '领带': 'ties',
   'Ties': 'ties',
+  '明星同款': 'celebrityStyle',
+  'Celebrity Style': 'celebrityStyle',
+  '时尚达人限时折扣入口': 'fashionistaDiscount',
+  'Fashionista Limited-time Discount Entrance': 'fashionistaDiscount',
   '新品上新': 'newArrivals',
   'New Arrivals': 'newArrivals'
 };
